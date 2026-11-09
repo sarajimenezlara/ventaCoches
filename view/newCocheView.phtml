@@ -8,8 +8,11 @@
     <body>
         <nav>
             <a href="index.php">Inicio</a>
-            <a href="index.php?v=newCoche">Nuevo coche</a>
-            <a href="index.php?v=compra">Registrar compra</a>
+            <a href="index.php?c=coche&action=list">Coches</a>
+            <a href="index.php?c=cliente&action=list">Clientes</a>
+            <a href="index.php?c=compra&action=create">Registrar compra</a>
+            <a href="index.php?c=reserva&action=list">Reservas</a>
+            <a href="index.php?c=user&action=logout">Cerrar sesión</a>
         </nav>
         <div>
             <h1>Nuevo coche</h1>
@@ -17,7 +20,7 @@
                 <p><?= htmlspecialchars($error) ?></p>
             <?php endif; ?>
             <!-- enctype para poder subir la foto -->
-            <form method="POST" action="index.php?c=coche&action=nuevo" enctype="multipart/form-data">
+            <form method="POST" action="index.php?c=coche&action=create" enctype="multipart/form-data">
                 <div>
                     <div>
                         <label for="matricula">Matrícula:</label>
@@ -59,7 +62,7 @@
                 <label for="descripcion">Descripción:</label>
                 <textarea id="descripcion" name="descripcion" rows="3"><?= htmlspecialchars($_POST['descripcion'] ?? '') ?></textarea>
                 <label for="imagen">Foto:</label>
-                <input type="file" id="imagen" name="imagen" accept="image/*">
+                <input type="file" id="imagen" name="imagen" accept="image/jpeg,image/png,image/webp">
                 <input type="submit" value="Guardar coche">
             </form>
         </div>

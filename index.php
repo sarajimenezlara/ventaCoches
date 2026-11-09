@@ -1,49 +1,46 @@
 <?php
 session_start();
 require_once 'db.php';
-require_once 'models/repositories/CocheRepository.php';
-require_once 'models/repositories/ClienteRepository.php';
 
-// TEMPORAL: mientras los controladores están vacíos, el index enseña
-// las vistas directamente con ?v=... y les pasa los datos que necesitan.
-// Cuando estén los controladores, esto se cambia por el ?c=...&action=...
-$v = isset($_GET['v']) ? $_GET['v'] : 'main';
+// ?c=controlador&action=accion
+$c = isset($_GET['c']) ? $_GET['c'] : 'home';
+$action = isset($_GET['action']) ? $_GET['action'] : '';
 
-// TEMPORAL: ClienteRepository aún no tiene getAllClientes()
-function todosLosClientes(): array {
-    $repoClientes = new ClienteRepository();
-    $clientes = [];
-    $result = (new db())->connect()->query("SELECT * FROM cliente ORDER BY nombre");
-    while ($row = $result->fetch_assoc()) {
-        $clientes[] = $repoClientes->mapRow($row);
-    }
-    return $clientes;
-}
-
-switch ($v) {
-    case 'login':
-        require 'view/loginView.phtml';
+switch ($c) {
+    case 'user':
+        require_once 'controllers/userController.php';
+        $controller = new UserController();
         break;
-    case 'register':
-        require 'view/registerView.phtml';
+    case 'cliente':
+        require_once 'controllers/clienteController.php';
+        $controller = new ClienteController();
         break;
-    case 'newCoche':
-        require 'view/newCocheView.phtml';
+    case 'coche':
+        require_once 'controllers/cocheController.php';
+        $controller = new CocheController();
         break;
     case 'compra':
-        $coches = (new CocheRepository())->getAllCoches();
-        $clientes = todosLosClientes();
-        require 'view/compraView.phtml';
+        require_once 'controllers/compraController.php';
+        $controller = new CompraController();
         break;
     case 'reserva':
-        $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-        $coche = (new CocheRepository())->getCocheById($id);
-        $clientes = todosLosClientes();
-        require 'view/newReservaView.phtml';
+        require_once 'controllers/reservaController.php';
+        $controller = new ReservaController();
+        break;
+    case 'venta':
+        require_once 'controllers/ventaController.php';
+        $controller = new VentaController();
+        break;
+    case 'estadistica':
+        require_once 'controllers/estadisticaController.php';
+        $controller = new EstadisticaController();
         break;
     default:
+        // Página principal (pública): los coches disponibles
+        require_once 'models/repositories/CocheRepository.php';
         $coches = (new CocheRepository())->getCochesDisponibles();
         require 'view/mainView.phtml';
-        break;
+        exit();
 }
-?>
+
+$controller->run($action);

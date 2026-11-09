@@ -24,6 +24,8 @@ class UserController extends MainController{
             $user = $this->userRepo->getUserByUsername($username);
             if($user && password_verify($password, $user->getPassword())){
                 $_SESSION['user_id'] = $user->getId();
+                // Para enseñar el enlace de estadísticas solo al admin
+                $_SESSION['rol'] = $user->getRol();
                 $this->redirect('index.php');
             } else {
                 $error = "Usuario o contraseña incorrectos.";

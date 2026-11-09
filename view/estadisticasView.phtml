@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Estadísticas</title>
+    </head>
+    <body>
+        <nav>
+            <a href="index.php">Inicio</a>
+            <a href="index.php?c=coche&action=list">Coches</a>
+            <a href="index.php?c=cliente&action=list">Clientes</a>
+            <a href="index.php?c=compra&action=create">Registrar compra</a>
+            <a href="index.php?c=reserva&action=list">Reservas</a>
+            <a href="index.php?c=estadistica">Estadísticas</a>
+            <a href="index.php?c=user&action=logout">Cerrar sesión</a>
+        </nav>
+        <main>
+            <h1>Estadísticas</h1>
+
+            <h2>Resumen</h2>
+            <table>
+                <tr>
+                    <th>Ganado vendiendo</th>
+                    <td><?= number_format($totales['ventas'], 2, ',', '.') ?> € (<?= $totales['num_ventas'] ?> coches)</td>
+                </tr>
+                <tr>
+                    <th>Gastado comprando</th>
+                    <td><?= number_format($totales['compras'], 2, ',', '.') ?> € (<?= $totales['num_compras'] ?> coches)</td>
+                </tr>
+                <tr>
+                    <th>Beneficio</th>
+                    <td><?= number_format($totales['beneficio'], 2, ',', '.') ?> €</td>
+                </tr>
+            </table>
+
+            <h2>Por trabajador</h2>
+            <table>
+                <tr>
+                    <th>Trabajador</th>
+                    <th>Coches vendidos</th>
+                    <th>Total vendido</th>
+                    <th>Coches comprados</th>
+                    <th>Total comprado</th>
+                </tr>
+                <?php foreach ($trabajadores as $t): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($t['nombre'] . ' ' . $t['apellidos'] . ' (' . $t['username'] . ')') ?><?= $t['rol'] === 'admin' ? ' · admin' : '' ?></td>
+                        <td><?= (int)$t['coches_vendidos'] ?></td>
+                        <td><?= number_format((float)$t['total_vendido'], 2, ',', '.') ?> €</td>
+                        <td><?= (int)$t['coches_comprados'] ?></td>
+                        <td><?= number_format((float)$t['total_comprado'], 2, ',', '.') ?> €</td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
+        </main>
+    </body>
+</html>

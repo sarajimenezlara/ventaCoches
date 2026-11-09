@@ -55,8 +55,8 @@ CREATE TABLE IF NOT EXISTS compra (
 );
 
 -- Reserva: solo se apunta quién quiere el coche, no se paga nada.
--- Después se revisa el coche (tabla revision con id_reserva) y, si el cliente
--- se lo queda, se hace la venta (tabla venta con id_reserva) y la reserva pasa a 'completada'.
+-- Si el cliente se lo queda, se hace la venta (tabla venta con id_reserva)
+-- y la reserva pasa a 'completada'.
 -- Si no lo quiere, la reserva pasa a 'cancelada' y el coche vuelve a 'disponible'.
 CREATE TABLE IF NOT EXISTS reserva (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -69,18 +69,6 @@ CREATE TABLE IF NOT EXISTS reserva (
     FOREIGN KEY (id_coche) REFERENCES coche(id) ON DELETE RESTRICT,
     FOREIGN KEY (id_cliente) REFERENCES cliente(id) ON DELETE RESTRICT,
     FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE SET NULL
-);
-
-CREATE TABLE IF NOT EXISTS revision (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_coche INT NOT NULL,
-    id_reserva INT,
-    id_usuario INT NOT NULL,
-    fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    resultado ENUM('pendiente', 'apto', 'no_apto') NOT NULL DEFAULT 'pendiente',
-    FOREIGN KEY (id_coche) REFERENCES coche(id) ON DELETE CASCADE,
-    FOREIGN KEY (id_reserva) REFERENCES reserva(id) ON DELETE SET NULL,
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS venta (

@@ -43,7 +43,7 @@ class ReservaRepository {
         return $reservas;
     }
 
-    // Las que están pendientes de revisión / de que el cliente decida
+    // Las que están pendientes de que el cliente decida
     public function getReservasActivas(): array {
         $stmt = $this->db->prepare("SELECT * FROM reserva WHERE estado = 'activa' ORDER BY fecha_reserva");
         $stmt->execute();
@@ -53,6 +53,18 @@ class ReservaRepository {
             $reservas[] = $this->mapRow($row);
         }
         return $reservas;
+    }
+
+    // La reserva activa de un coche (o null si no tiene)
+    public function getReservaActivaByCoche(int $id_coche): ?Reserva {
+        $stmt = $this->db->prepare("SELECT * FROM reserva WHERE id_coche = ? AND estado = 'activa'");
+        $stmt->bind_param("i", $id_coche);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($row = $result->fetch_assoc()) {
+            return $this->mapRow($row);
+        }
+        return null;
     }
 
     // Apunta la reserva (sin pago) y marca el coche como reservado.

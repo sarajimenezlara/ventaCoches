@@ -8,17 +8,20 @@
     <body>
         <nav>
             <a href="index.php">Inicio</a>
-            <a href="index.php?v=login">Iniciar sesión</a>
-            <a href="index.php?v=register">Registrarse</a>
+            <a href="index.php?c=coche&action=list">Coches</a>
+            <a href="index.php?c=cliente&action=list">Clientes</a>
+            <a href="index.php?c=compra&action=create">Registrar compra</a>
+            <a href="index.php?c=reserva&action=list">Reservas</a>
+            <a href="index.php?c=user&action=logout">Cerrar sesión</a>
         </nav>
         <main>
             <h1>Reservar coche</h1>
             <?php if (empty($coche)): ?>
                 <p>Ese coche no existe.</p>
-                <p><a href="index.php">Volver a los coches disponibles</a></p>
+                <p><a href="index.php?c=coche&action=list">Volver a los coches</a></p>
             <?php elseif ($coche->getSituacion() !== 'disponible'): ?>
                 <p>Este coche ya no está disponible.</p>
-                <p><a href="index.php">Volver a los coches disponibles</a></p>
+                <p><a href="index.php?c=coche&action=list">Volver a los coches</a></p>
             <?php else: ?>
                 <h2><?= htmlspecialchars($coche->getMarca() . ' ' . $coche->getModelo()) ?></h2>
                 <?php if ($coche->getImagen()): ?>
@@ -39,7 +42,6 @@
                 <h2>Cómo funciona la reserva</h2>
                 <ul>
                     <li>Reservar no cuesta nada: solo apuntamos que el coche es para ti.</li>
-                    <li>Antes de nada revisaremos el coche.</li>
                     <li>Si después te lo quieres quedar, se hace la compra y el pago.</li>
                     <li>Si no te convence, puedes quitar la reserva.</li>
                 </ul>
@@ -48,7 +50,7 @@
                     <p><?= htmlspecialchars($error) ?></p>
                 <?php endif; ?>
 
-                <form method="POST" action="index.php?c=reserva&action=reservar">
+                <form method="POST" action="index.php?c=reserva&action=create">
                     <input type="hidden" name="id_coche" value="<?= (int)$coche->getId() ?>">
 
                     <label for="id_cliente">Cliente:</label>
@@ -60,7 +62,7 @@
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    <p>¿No está? <a href="index.php?v=register">Da de alta al cliente</a>.</p>
+                    <p>¿No está? <a href="index.php?c=cliente&action=create">Da de alta al cliente</a>.</p>
 
                     <input type="submit" value="Reservar">
                 </form>

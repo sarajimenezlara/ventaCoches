@@ -5,7 +5,7 @@ require_once __DIR__ . '/../models/repositories/ClienteRepository.php';
 require_once __DIR__ . '/../models/repositories/CocheRepository.php';
 
 // La reserva la apunta un trabajador (no se paga nada).
-// Después se revisa el coche y, si el cliente se lo queda, se hace la venta.
+// Si el cliente se lo queda, después se hace la venta.
 class ReservaController extends MainController{
     private ReservaRepository $reservaRepo;
     private ClienteRepository $clienteRepo;
@@ -35,7 +35,7 @@ class ReservaController extends MainController{
         }
     }
 
-    // Reservas pendientes (de revisar el coche o de que el cliente decida)
+    // Reservas pendientes (de que el cliente decida)
     private function list(){
         $reservas = $this->reservaRepo->getReservasActivas();
         require __DIR__ . '/../view/mainView.phtml';

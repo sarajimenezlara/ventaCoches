@@ -1,3 +1,11 @@
+<?php
+// Esta vista la usan varios controladores:
+//   - página principal y coche->list:  $coches
+//   - cliente->list:                   $clientes
+//   - reserva->list:                   $reservas
+$logueado = isset($_SESSION['user_id']);
+$esAdmin = ($_SESSION['rol'] ?? '') === 'admin';
+?>
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -8,34 +16,126 @@
     <body>
         <nav>
             <a href="index.php">Inicio</a>
-            <a href="index.php?v=newCoche">Nuevo coche</a>
-            <a href="index.php?v=compra">Registrar compra</a>
-            <a href="index.php?v=login">Iniciar sesión</a>
-            <a href="index.php?v=register">Registrarse</a>
+            <?php if ($logueado): ?>
+                <a href="index.php?c=coche&action=list">Coches</a>
+                <a href="index.php?c=cliente&action=list">Clientes</a>
+                <a href="index.php?c=compra&action=create">Registrar compra</a>
+                <a href="index.php?c=reserva&action=list">Reservas</a>
+                <?php if ($esAdmin): ?>
+                    <a href="index.php?c=estadistica">Estadísticas</a>
+                <?php endif; ?>
+                <a href="index.php?c=user&action=logout">Cerrar sesión</a>
+            <?php else: ?>
+                <a href="index.php?c=user&action=login">Iniciar sesión</a>
+                <a href="index.php?c=user&action=register">Registrarse</a>
+            <?php endif; ?>
         </nav>
         <main>
-            <h1>Coches disponibles</h1>
-            <?php if (empty($coches)): ?>
-                <p>Ahora mismo no hay coches disponibles.</p>
+            <?php if (isset($clientes)): ?>
+                <!-- ===== LISTADO DE CLIENTES ===== -->
+                <h1>Clientes</h1>
+                <p><a href="index.php?c=cliente&action=create">Nuevo cliente</a></p>
+                <?php if (empty($clientes)): ?>
+                    <p>Todavía no hay clientes.</p>
+                <?php else: ?>
+                    <table>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Nombre</th>
+                            <th>DNI / CIF</th>
+                            <th>Teléfono</th>
+                            <th>Email</th>
+                            <th>Dirección</th>
+                            <th></th>
+                        </tr>
+                        <?php foreach ($clientes as $cliente): ?>
+                            <tr>
+                                <td><?= htmlspecialchars(ucfirst($cliente->getTipo())) ?></td>
+                                <td><?= htmlspecialchars(trim($cliente->getNombre() . ' ' . ($cliente->getApellidos() ?? ''))) ?></td>
+                                <td><?= htmlspecialchars($cliente->getDni()) ?></td>
+                                <td><?= htmlspecialchars($cliente->getTelefono()) ?></td>
+                                <td><?= htmlspecialchars($cliente->getEmail() ?? '') ?></td>
+                                <td><?= htmlspecialchars($cliente->getDireccion() ?? '') ?></td>
+                                <td><a href="index.php?c=cliente&action=edit&id=<?= (int)$cliente->getId() ?>">Editar</a></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </table>
+                <?php endif; ?>
+
+            <?php elseif (isset($reservas)): ?>
+                <!-- ===== RESERVAS PENDIENTES ===== -->
+                <h1>Reservas pendientes</h1>
+                <?php if (empty($reservas)): ?>
+                    <p>No hay reservas pendientes.</p>
+                <?php else: ?>
+                    <table>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Coche</th>
+                            <th>Cliente</th>
+                            <th></th>
+                        </tr>
+                        <?php foreach ($reservas as $reserva): ?>
+                            <?php
+                            // TEMPORAL: la reserva solo guarda los ids. Lo correcto sería que
+                            // el controlador pasara ya el coche y el cliente de cada reserva
+                            $cocheReserva = $this->cocheRepo->getCocheById($reserva->getIdCoche());
+                            $clienteReserva = $this->clienteRepo->getClienteById($reserva->getIdCliente());
+                            ?>
+                            <tr>
+                                <td><?= htmlspecialchars(date('d/m/Y H:i', strtotime($reserva->getFechaReserva()))) ?></td>
+                                <td><?= $cocheReserva ? htmlspecialchars($cocheReserva->getMatricula() . ' · ' . $cocheReserva->getMarca() . ' ' . $cocheReserva->getModelo()) : '' ?></td>
+                                <td><?= $clienteReserva ? htmlspecialchars(trim($clienteReserva->getNombre() . ' ' . ($clienteReserva->getApellidos() ?? '')) . ' (' . $clienteReserva->getDni() . ')') : '' ?></td>
+                                <td>
+                                    <a href="index.php?c=venta&action=create&id=<?= (int)$reserva->getIdCoche() ?>">Vender (se lo queda)</a>
+                                    <!-- Por POST para que no se cancele solo con abrir un enlace -->
+                                    <form method="POST" action="index.php?c=reserva&action=cancel">
+                                        <input type="hidden" name="id" value="<?= (int)$reserva->getId() ?>">
+                                        <input type="submit" value="Cancelar reserva">
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </table>
+                <?php endif; ?>
+
             <?php else: ?>
-                <div>
+                <!-- ===== COCHES ===== -->
+                <h1><?= $logueado ? 'Coches' : 'Coches disponibles' ?></h1>
+                <?php if ($logueado): ?>
+                    <p><a href="index.php?c=coche&action=create">Nuevo coche</a></p>
+                <?php endif; ?>
+                <?php if (empty($coches)): ?>
+                    <p>Ahora mismo no hay coches.</p>
+                <?php else: ?>
                     <?php foreach ($coches as $coche): ?>
-                        <div>
+                        <article>
                             <?php if ($coche->getImagen()): ?>
-                                <img src="public/image/<?= htmlspecialchars($coche->getImagen()) ?>" alt="<?= htmlspecialchars($coche->getMarca() . ' ' . $coche->getModelo()) ?>">
-                            <?php else: ?>
-                                <div>Sin foto</div>
+                                <img src="public/image/<?= htmlspecialchars($coche->getImagen()) ?>" alt="<?= htmlspecialchars($coche->getMarca() . ' ' . $coche->getModelo()) ?>" width="250">
                             <?php endif; ?>
-                            <div>
-                                <h2><?= htmlspecialchars($coche->getMarca() . ' ' . $coche->getModelo()) ?></h2>
-                                <p><?= (int)$coche->getAnio() ?> · <?= number_format($coche->getKilometros(), 0, ',', '.') ?> km</p>
-                                <p><?= htmlspecialchars(ucfirst($coche->getCombustible())) ?><?= $coche->getColor() ? ' · ' . htmlspecialchars($coche->getColor()) : '' ?></p>
-                                <p><?= number_format($coche->getPrecioVenta(), 2, ',', '.') ?> €</p>
-                                <a href="index.php?v=reserva&id=<?= (int)$coche->getId() ?>">Reservar</a>
-                            </div>
-                        </div>
+                            <h2><?= htmlspecialchars($coche->getMarca() . ' ' . $coche->getModelo()) ?></h2>
+                            <p><?= (int)$coche->getAnio() ?> · <?= number_format($coche->getKilometros(), 0, ',', '.') ?> km · <?= htmlspecialchars(ucfirst($coche->getCombustible())) ?><?= $coche->getColor() ? ' · ' . htmlspecialchars($coche->getColor()) : '' ?></p>
+                            <?php if ($coche->getDescripcion()): ?>
+                                <p><?= nl2br(htmlspecialchars($coche->getDescripcion())) ?></p>
+                            <?php endif; ?>
+                            <p><?= number_format($coche->getPrecioVenta(), 2, ',', '.') ?> €</p>
+
+                            <?php if ($logueado): ?>
+                                <p>Matrícula: <?= htmlspecialchars($coche->getMatricula()) ?> · Situación: <?= htmlspecialchars(ucfirst($coche->getSituacion())) ?></p>
+                                <a href="index.php?c=coche&action=edit&id=<?= (int)$coche->getId() ?>">Editar</a>
+                                <?php if ($coche->getSituacion() === 'disponible'): ?>
+                                    <a href="index.php?c=reserva&action=create&id=<?= (int)$coche->getId() ?>">Reservar</a>
+                                <?php endif; ?>
+                                <?php if ($coche->getSituacion() !== 'vendido'): ?>
+                                    <a href="index.php?c=venta&action=create&id=<?= (int)$coche->getId() ?>">Vender</a>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <p>¿Te interesa? Llámanos o ven al concesionario y te lo reservamos.</p>
+                            <?php endif; ?>
+                        </article>
+                        <hr>
                     <?php endforeach; ?>
-                </div>
+                <?php endif; ?>
             <?php endif; ?>
         </main>
     </body>

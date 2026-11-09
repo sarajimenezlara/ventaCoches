@@ -48,7 +48,6 @@ class VentaRepository {
     // Vende un coche. Comprueba antes:
     //   - que el coche existe y no está vendido
     //   - si está reservado, que la venta es para esa reserva y ese cliente
-    //   - que tiene una revisión 'apto' (si viene de una reserva, la de esa reserva)
     // Si algo no cuadra lanza InvalidArgumentException con el motivo (para enseñarlo en la vista).
     // Al vender: el coche pasa a 'vendido' y la reserva (si hay) a 'completada'.
     public function createVenta(Venta $venta): bool {
@@ -88,20 +87,7 @@ class VentaRepository {
             }
         }
 
-        // 3. La revisión (hay que revisar el coche antes de nada)
-        if ($id_reserva !== null) {
-            $stmt = $this->db->prepare("SELECT id FROM revision WHERE id_coche = ? AND id_reserva = ? AND resultado = 'apto'");
-            $stmt->bind_param("ii", $id_coche, $id_reserva);
-        } else {
-            $stmt = $this->db->prepare("SELECT id FROM revision WHERE id_coche = ? AND resultado = 'apto'");
-            $stmt->bind_param("i", $id_coche);
-        }
-        $stmt->execute();
-        if ($stmt->get_result()->num_rows === 0) {
-            throw new InvalidArgumentException("El coche no tiene ninguna revisión 'apto'.");
-        }
-
-        // 4. Se guarda todo junto (transacción): venta + coche vendido + reserva completada
+        // 3. Se guarda todo junto (transacción): venta + coche vendido + reserva completada
         $this->db->begin_transaction();
         try {
             $stmt = $this->db->prepare("INSERT INTO venta (id_coche, id_cliente, id_usuario, id_reserva, precio, metodo_pago) VALUES (?, ?, ?, ?, ?, ?)");
