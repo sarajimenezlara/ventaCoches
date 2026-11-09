@@ -4,8 +4,7 @@ require_once __DIR__ . '/../models/repositories/CompraRepository.php';
 require_once __DIR__ . '/../models/repositories/ClienteRepository.php';
 require_once __DIR__ . '/../models/repositories/CocheRepository.php';
 
-// Solo registra compras (el concesionario compra un coche a un cliente).
-// Las compras no se listan en ningún sitio.
+
 class CompraController extends MainController{
     private CompraRepository $compraRepo;
     private ClienteRepository $clienteRepo;
@@ -41,7 +40,7 @@ class CompraController extends MainController{
                     $this->user->getId(),   // el trabajador que ha iniciado sesión
                     $datos['precio'],
                     $datos['metodo_pago'],
-                    null,                   // la fecha la pone la BD (CURRENT_TIMESTAMP)
+                    null,                   // la fecha la pone la BD
                     $datos['tenia_revision']
                 );
                 if($this->compraRepo->createCompra($compra)){
