@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Registrarse</title>
+    </head>
+    <body>
+        <nav>
+            <a href="index.php">Inicio</a>
+            <a href="index.php?v=login">Iniciar sesión</a>
+        </nav>
+        <div>
+            <h1>Crear cuenta</h1>
+            <p>Regístrate para poder reservar coches desde la web.</p>
+            <?php if (!empty($error)): ?>
+                <p><?= htmlspecialchars($error) ?></p>
+            <?php endif; ?>
+            <form method="POST" action="index.php?c=user&action=register">
+                <label for="tipo">Soy:</label>
+                <select id="tipo" name="tipo">
+                    <option value="particular" <?= ($_POST['tipo'] ?? '') === 'empresa' ? '' : 'selected' ?>>Particular</option>
+                    <option value="empresa" <?= ($_POST['tipo'] ?? '') === 'empresa' ? 'selected' : '' ?>>Empresa</option>
+                </select>
+                <label for="nombre">Nombre (o razón social):</label>
+                <input type="text" id="nombre" name="nombre" value="<?= htmlspecialchars($_POST['nombre'] ?? '') ?>" required>
+                <label for="apellidos">Apellidos:</label>
+                <input type="text" id="apellidos" name="apellidos" value="<?= htmlspecialchars($_POST['apellidos'] ?? '') ?>">
+                <label for="dni">DNI / CIF:</label>
+                <input type="text" id="dni" name="dni" value="<?= htmlspecialchars($_POST['dni'] ?? '') ?>" required>
+                <label for="telefono">Teléfono:</label>
+                <input type="tel" id="telefono" name="telefono" value="<?= htmlspecialchars($_POST['telefono'] ?? '') ?>" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" required>
+                <label for="direccion">Dirección:</label>
+                <input type="text" id="direccion" name="direccion" value="<?= htmlspecialchars($_POST['direccion'] ?? '') ?>">
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" name="password" required>
+                <input type="submit" value="Registrarme">
+            </form>
+            <p>¿Ya tienes cuenta? <a href="index.php?v=login">Inicia sesión</a></p>
+        </div>
+    </body>
+</html>

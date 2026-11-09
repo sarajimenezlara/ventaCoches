@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Reservar coche</title>
+    </head>
+    <body>
+        <nav>
+            <a href="index.php">Inicio</a>
+            <a href="index.php?v=login">Iniciar sesión</a>
+            <a href="index.php?v=register">Registrarse</a>
+        </nav>
+        <main>
+            <h1>Reservar coche</h1>
+            <?php if (empty($coche)): ?>
+                <p>Ese coche no existe.</p>
+                <p><a href="index.php">Volver a los coches disponibles</a></p>
+            <?php elseif ($coche->getSituacion() !== 'disponible'): ?>
+                <p>Este coche ya no está disponible.</p>
+                <p><a href="index.php">Volver a los coches disponibles</a></p>
+            <?php else: ?>
+                <h2><?= htmlspecialchars($coche->getMarca() . ' ' . $coche->getModelo()) ?></h2>
+                <?php if ($coche->getImagen()): ?>
+                    <img src="public/image/<?= htmlspecialchars($coche->getImagen()) ?>" alt="<?= htmlspecialchars($coche->getMarca() . ' ' . $coche->getModelo()) ?>">
+                <?php endif; ?>
+                <p>Matrícula: <?= htmlspecialchars($coche->getMatricula()) ?></p>
+                <p>Año: <?= (int)$coche->getAnio() ?></p>
+                <p>Kilómetros: <?= number_format($coche->getKilometros(), 0, ',', '.') ?> km</p>
+                <p>Combustible: <?= htmlspecialchars(ucfirst($coche->getCombustible())) ?></p>
+                <?php if ($coche->getColor()): ?>
+                    <p>Color: <?= htmlspecialchars($coche->getColor()) ?></p>
+                <?php endif; ?>
+                <?php if ($coche->getDescripcion()): ?>
+                    <p><?= nl2br(htmlspecialchars($coche->getDescripcion())) ?></p>
+                <?php endif; ?>
+                <p>Precio: <?= number_format($coche->getPrecioVenta(), 2, ',', '.') ?> €</p>
+
+                <h2>Cómo funciona la reserva</h2>
+                <ul>
+                    <li>Reservar no cuesta nada: solo apuntamos que el coche es para ti.</li>
+                    <li>Antes de nada revisaremos el coche.</li>
+                    <li>Si después te lo quieres quedar, se hace la compra y el pago.</li>
+                    <li>Si no te convence, puedes quitar la reserva.</li>
+                </ul>
+
+                <?php if (!empty($error)): ?>
+                    <p><?= htmlspecialchars($error) ?></p>
+                <?php endif; ?>
+
+                <form method="POST" action="index.php?c=reserva&action=reservar">
+                    <input type="hidden" name="id_coche" value="<?= (int)$coche->getId() ?>">
+
+                    <label for="id_cliente">Cliente:</label>
+                    <select id="id_cliente" name="id_cliente" required>
+                        <option value="">-- Elige un cliente --</option>
+                        <?php foreach ($clientes as $cliente): ?>
+                            <option value="<?= (int)$cliente->getId() ?>">
+                                <?= htmlspecialchars(trim($cliente->getNombre() . ' ' . ($cliente->getApellidos() ?? ''))) ?> (<?= htmlspecialchars($cliente->getDni()) ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <p>¿No está? <a href="index.php?v=register">Da de alta al cliente</a>.</p>
+
+                    <input type="submit" value="Reservar">
+                </form>
+            <?php endif; ?>
+        </main>
+    </body>
+</html>

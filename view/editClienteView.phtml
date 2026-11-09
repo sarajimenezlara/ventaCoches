@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Editar cliente</title>
+    </head>
+    <body>
+        <nav>
+            <a href="index.php">Inicio</a>
+            <a href="index.php?c=cliente&action=list">Clientes</a>
+            <a href="index.php?c=cliente&action=create">Nuevo cliente</a>
+            <a href="index.php?c=user&action=logout">Cerrar sesión</a>
+        </nav>
+        <main>
+            <h1>Editar cliente</h1>
+
+            <?php if (!empty($error)): ?>
+                <p><?= htmlspecialchars($error) ?></p>
+            <?php endif; ?>
+
+            <?php
+            // Si se acaba de enviar el formulario con algún error se enseña lo que escribieron;
+            // si no, los datos que tiene ahora el cliente
+            $tipo = $_POST['tipo'] ?? $cliente->getTipo();
+            ?>
+            <form method="POST" action="index.php?c=cliente&action=edit&id=<?= (int)$cliente->getId() ?>">
+                <label for="tipo">Tipo:</label>
+                <select id="tipo" name="tipo">
+                    <option value="particular" <?= $tipo === 'empresa' ? '' : 'selected' ?>>Particular</option>
+                    <option value="empresa" <?= $tipo === 'empresa' ? 'selected' : '' ?>>Empresa</option>
+                </select>
+
+                <label for="nombre">Nombre (o razón social si es empresa):</label>
+                <input type="text" id="nombre" name="nombre" maxlength="150" value="<?= htmlspecialchars($_POST['nombre'] ?? $cliente->getNombre()) ?>" required>
+
+                <label for="apellidos">Apellidos:</label>
+                <input type="text" id="apellidos" name="apellidos" maxlength="150" value="<?= htmlspecialchars($_POST['apellidos'] ?? $cliente->getApellidos() ?? '') ?>">
+
+                <label for="dni">DNI / NIE / CIF:</label>
+                <input type="text" id="dni" name="dni" maxlength="20" value="<?= htmlspecialchars($_POST['dni'] ?? $cliente->getDni()) ?>" required>
+
+                <label for="telefono">Teléfono:</label>
+                <input type="tel" id="telefono" name="telefono" maxlength="20" value="<?= htmlspecialchars($_POST['telefono'] ?? $cliente->getTelefono()) ?>" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" maxlength="100" value="<?= htmlspecialchars($_POST['email'] ?? $cliente->getEmail() ?? '') ?>">
+
+                <label for="direccion">Dirección:</label>
+                <input type="text" id="direccion" name="direccion" maxlength="255" value="<?= htmlspecialchars($_POST['direccion'] ?? $cliente->getDireccion() ?? '') ?>">
+
+                <input type="submit" value="Guardar cambios">
+            </form>
+
+            <p><a href="index.php?c=cliente&action=list">Volver al listado de clientes</a></p>
+        </main>
+    </body>
+</html>

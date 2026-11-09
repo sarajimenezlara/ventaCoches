@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Venta de Coches</title>
+    </head>
+    <body>
+        <nav>
+            <a href="index.php">Inicio</a>
+            <a href="index.php?v=newCoche">Nuevo coche</a>
+            <a href="index.php?v=compra">Registrar compra</a>
+            <a href="index.php?v=login">Iniciar sesión</a>
+            <a href="index.php?v=register">Registrarse</a>
+        </nav>
+        <main>
+            <h1>Coches disponibles</h1>
+            <?php if (empty($coches)): ?>
+                <p>Ahora mismo no hay coches disponibles.</p>
+            <?php else: ?>
+                <div>
+                    <?php foreach ($coches as $coche): ?>
+                        <div>
+                            <?php if ($coche->getImagen()): ?>
+                                <img src="public/image/<?= htmlspecialchars($coche->getImagen()) ?>" alt="<?= htmlspecialchars($coche->getMarca() . ' ' . $coche->getModelo()) ?>">
+                            <?php else: ?>
+                                <div>Sin foto</div>
+                            <?php endif; ?>
+                            <div>
+                                <h2><?= htmlspecialchars($coche->getMarca() . ' ' . $coche->getModelo()) ?></h2>
+                                <p><?= (int)$coche->getAnio() ?> · <?= number_format($coche->getKilometros(), 0, ',', '.') ?> km</p>
+                                <p><?= htmlspecialchars(ucfirst($coche->getCombustible())) ?><?= $coche->getColor() ? ' · ' . htmlspecialchars($coche->getColor()) : '' ?></p>
+                                <p><?= number_format($coche->getPrecioVenta(), 2, ',', '.') ?> €</p>
+                                <a href="index.php?v=reserva&id=<?= (int)$coche->getId() ?>">Reservar</a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </main>
+    </body>
+</html>

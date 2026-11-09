@@ -1,0 +1,5 @@
+# Contraseñas de la base de datos
+.env
+
+# Fotos que se suben desde la web
+public/image/

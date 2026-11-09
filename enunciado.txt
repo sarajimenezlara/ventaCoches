@@ -1,0 +1,6 @@
+Una aplicacion de venta de coches, es compraventa de segunda mano, osea que pueden tener coches que alguien vende, o una empresa que vende 10 coches, 
+Datos dle que vende, datos del que compra cuando como ha pagado si tenia revision, del coche la matricula, estado. Admin que vea las
+estadisticas de cuanto ha ganado vendiendo cuanto ha perdido comprando, lo que ha vendido cada trabajador. El trabajador el que compra y vende, no puede ver las estadisticas
+pero puede crear clientes, ventas, transacciones... En la pagina principal se pueden ver los coches que hay dispònibles en ese momento
+(que se pueda reserva pero aun asi tenga que revisar el coche antes de nada, aparte tu reservas en web y luego no te gusta puedes quitar la reserva y 
+tendran que devolver el dinero al cliente)

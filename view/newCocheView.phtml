@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Nuevo coche</title>
+    </head>
+    <body>
+        <nav>
+            <a href="index.php">Inicio</a>
+            <a href="index.php?v=newCoche">Nuevo coche</a>
+            <a href="index.php?v=compra">Registrar compra</a>
+        </nav>
+        <div>
+            <h1>Nuevo coche</h1>
+            <?php if (!empty($error)): ?>
+                <p><?= htmlspecialchars($error) ?></p>
+            <?php endif; ?>
+            <!-- enctype para poder subir la foto -->
+            <form method="POST" action="index.php?c=coche&action=nuevo" enctype="multipart/form-data">
+                <div>
+                    <div>
+                        <label for="matricula">Matrícula:</label>
+                        <input type="text" id="matricula" name="matricula" placeholder="1234ABC" value="<?= htmlspecialchars($_POST['matricula'] ?? '') ?>" required>
+                    </div>
+                    <div>
+                        <label for="anio">Año:</label>
+                        <input type="number" id="anio" name="anio" min="1950" max="<?= date('Y') ?>" value="<?= htmlspecialchars($_POST['anio'] ?? '') ?>" required>
+                    </div>
+                    <div>
+                        <label for="marca">Marca:</label>
+                        <input type="text" id="marca" name="marca" value="<?= htmlspecialchars($_POST['marca'] ?? '') ?>" required>
+                    </div>
+                    <div>
+                        <label for="modelo">Modelo:</label>
+                        <input type="text" id="modelo" name="modelo" value="<?= htmlspecialchars($_POST['modelo'] ?? '') ?>" required>
+                    </div>
+                    <div>
+                        <label for="kilometros">Kilómetros:</label>
+                        <input type="number" id="kilometros" name="kilometros" min="0" value="<?= htmlspecialchars($_POST['kilometros'] ?? '0') ?>" required>
+                    </div>
+                    <div>
+                        <label for="color">Color:</label>
+                        <input type="text" id="color" name="color" value="<?= htmlspecialchars($_POST['color'] ?? '') ?>">
+                    </div>
+                    <div>
+                        <label for="combustible">Combustible:</label>
+                        <select id="combustible" name="combustible">
+                            <?php foreach (['gasolina' => 'Gasolina', 'diesel' => 'Diésel', 'hibrido' => 'Híbrido', 'electrico' => 'Eléctrico'] as $valor => $texto): ?>
+                                <option value="<?= $valor ?>" <?= ($_POST['combustible'] ?? '') === $valor ? 'selected' : '' ?>><?= $texto ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="precio_venta">Precio de venta (€):</label>
+                        <input type="number" id="precio_venta" name="precio_venta" min="0" step="0.01" value="<?= htmlspecialchars($_POST['precio_venta'] ?? '') ?>" required>
+                    </div>
+                </div>
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" name="descripcion" rows="3"><?= htmlspecialchars($_POST['descripcion'] ?? '') ?></textarea>
+                <label for="imagen">Foto:</label>
+                <input type="file" id="imagen" name="imagen" accept="image/*">
+                <input type="submit" value="Guardar coche">
+            </form>
+        </div>
+    </body>
+</html>
